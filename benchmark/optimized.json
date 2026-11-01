@@ -1,0 +1,44 @@
+{
+  "project": "python-jsonschema/jsonschema",
+  "reproduced_with": "same bench.py, identical input, same python/CPU as baseline (only validators.py patched)",
+  "scale": "seconds are median of 7 validated runs after 3 warmups",
+  "results": {
+    "small": {
+      "n": 500,
+      "baseline_median_s": 0.029746138956397772,
+      "optimized_median_s": 0.02321671461686492,
+      "speedup": 1.281,
+      "baseline_p25_s": 0.029715661890804768,
+      "baseline_p75_s": 0.0302612641826272,
+      "optimized_p25_s": 0.0231382567435503,
+      "optimized_p75_s": 0.023349673952907324,
+      "baseline_rsd_percent": 1.6,
+      "optimized_rsd_percent": 0.48
+    },
+    "medium": {
+      "n": 2000,
+      "baseline_median_s": 0.1201730309985578,
+      "optimized_median_s": 0.09451323514804244,
+      "speedup": 1.271,
+      "baseline_p25_s": 0.11973739322274923,
+      "baseline_p75_s": 0.1214926759712398,
+      "optimized_p25_s": 0.09413758013397455,
+      "optimized_p75_s": 0.09496504301205277,
+      "baseline_rsd_percent": 0.88,
+      "optimized_rsd_percent": 1.07
+    },
+    "large": {
+      "n": 8000,
+      "baseline_median_s": 0.48648548824712634,
+      "optimized_median_s": 0.37646933225914836,
+      "speedup": 1.292,
+      "baseline_p25_s": 0.47822950687259436,
+      "baseline_p75_s": 0.49139879178255796,
+      "optimized_p25_s": 0.36555925384163857,
+      "optimized_p75_s": 0.3933755741454661,
+      "baseline_rsd_percent": 1.14,
+      "optimized_rsd_percent": 3.63
+    }
+  },
+  "median_speedup_across_scales": 1.281
+}

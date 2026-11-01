@@ -1,0 +1,29 @@
+{
+  "project": "python-jsonschema/jsonschema",
+  "upstream_url": "https://github.com/python-jsonschema/jsonschema",
+  "optimization": "Cache consecutive descend() into the same plain JSON-Schema sub-document to avoid rebuilding a fresh Validator (and sub-resource resolver) for every array element",
+  "base_commit": "c497561ea0a95f5aac09cd63d15eb1420eb7bbec",
+  "upstream_tests": {
+    "command": "cd jsonschema && python3 -m pytest jsonschema/tests -q -p no:cacheprovider",
+    "result": "7682 passed, 847 skipped, 0 failed",
+    "elapsed_seconds": 10.84
+  },
+  "benchmark": {
+    "command": "python3 benchmark/bench.py --scale {small,medium,large} --samples 7 --warmup 3 --output benchmark/raw/{baseline,optimized}-<scale>.json",
+    "workload": {
+      "description": "Validate a JSON array of N human-readable API-style member records against a fixed Draft 2020-12 schema with nested properties/roles/required/type checks.",
+      "small_n": 500,
+      "medium_n": 2000,
+      "large_n": 8000
+    },
+    "seed": "deterministic; instance members built linearly (index i), no randomness",
+    "timing": "time.perf_counter(), 7 samples per scale, 3 warmup rounds",
+    "median_speedup": 1.281
+  },
+  "environment": {
+    "cpu": "AMD EPYC 7K62 48-Core Processor (4 vCPU, x86_64)",
+    "memory": "3.6 GiB total",
+    "os": "Linux 6.8.0-124-generic x86_64 glibc2.39",
+    "python": "3.12.3"
+  }
+}

@@ -1,0 +1,54 @@
+diff --git a/jsonschema/validators.py b/jsonschema/validators.py
+index 111f90e..24906ee 100644
+--- a/jsonschema/validators.py
++++ b/jsonschema/validators.py
+@@ -249,6 +249,9 @@ def create(
+             kw_only=True,
+             repr=False,
+         )
++        # Cache of validators evolved into plain (no-$) subschemas, keyed by
++        # schema object identity. Built lazily in descend().
++        _descend_cache = field(init=False, repr=False, default=None)
+ 
+         def __init_subclass__(cls):
+             warnings.warn(
+@@ -306,6 +309,8 @@ def create(
+                 if id is not None:
+                     push_scope(id)
+ 
++            self._descend_cache: dict[int, object] | None = {}
++
+         @classmethod
+         def check_schema(cls, schema, format_checker=_UNSET):
+             Validator = validator_for(cls.META_SCHEMA, default=cls)
+@@ -425,7 +430,29 @@ def create(
+                     resolver = self._resolver.in_subresource(
+                         specification.create_resource(schema),
+                     )
+-                evolved = self.evolve(schema=schema, _resolver=resolver)
++                    # Plain dict schemas with no $id/$ref/$anchor need no
++                    # per-descend resolution scope; the evolved validator is
++                    # bit-for-bit identical each time. Reuse it instead of
++                    # rebuilding a fresh Validator (and sub-resource resolver)
++                    # for every object element.
++                    cache = self._descend_cache
++                    if (
++                        cache is not None
++                        and isinstance(schema, dict)
++                        and not any(
++                            isinstance(k, str) and k.startswith("$") for k in schema
++                        )
++                    ):
++                        key = id(schema)
++                        entry = cache.get(key)
++                        if entry is None:
++                            entry = self.evolve(schema=schema, _resolver=resolver)
++                            cache[key] = entry
++                        evolved = entry
++                    else:
++                        evolved = self.evolve(schema=schema, _resolver=resolver)
++                else:
++                    evolved = self.evolve(schema=schema, _resolver=resolver)
+ 
+             for k, v in applicable_validators(schema):
+                 validator = evolved.VALIDATORS.get(k)
